@@ -276,9 +276,11 @@ class Prover:
             (C_coeff + (S3_coeff * self.beta) + self.gamma) -
 
             Z_coeff *
-            (A_coeff + (normal_roots.ifft() * self.beta            ) + self.gamma) *
-            (B_coeff + (normal_roots.ifft() * self.beta * Scalar(2)) + self.gamma) *
-            (C_coeff + (normal_roots.ifft() * self.beta * Scalar(3)) + self.gamma)
+            (A_coeff + (Polynomial([Scalar(i) for i in range(group_order)], Basis.LAGRANGE).ifft() * self.beta            ) + self.gamma) *
+            (B_coeff + (Polynomial([Scalar(i*2) for i in range(group_order)], Basis.LAGRANGE).ifft() * self.beta ) + self.gamma) *
+            (C_coeff + (Polynomial([Scalar(i*3) for i in range(group_order)], Basis.LAGRANGE).ifft() * self.beta ) + self.gamma)
+            # (B_coeff + (normal_roots.ifft() * self.beta * Scalar(2)) + self.gamma) *
+            # (C_coeff + (normal_roots.ifft() * self.beta * Scalar(3)) + self.gamma)
         )
 
         permutation_first_row_coeff = (Z_coeff - Scalar(1)) * L0_coeff
