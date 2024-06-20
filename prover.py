@@ -269,23 +269,28 @@ class Prover:
         # construct permutation polynomial
         # reference: https://github.com/sec-bit/learning-zkp/blob/master/plonk-intro-cn/3-plonk-permutation.md
         permutation_grand_product_coeff = (
-            # TODO: your code
-            ZW_coeff *
-            (A_coeff + (S1_coeff * self.beta) + self.gamma) *
-            (B_coeff + (S2_coeff * self.beta) + self.gamma) *
-            (C_coeff + (S3_coeff * self.beta) + self.gamma) -
+            # NOTE: the implementation of id(x) is `Cell.label()`:
+            #
+            #     ```
+            #     # Outputs the label (an inner-field element) representing a given
+            #     # (column, row) pair. Expects section = 1 for left, 2 right, 3 output
+            #     def label(self, group_order: int) -> Scalar:
+            #         assert self.row < group_order
+            #         return Scalar.roots_of_unity(group_order)[self.row] * self.column.value
+            #     ```
+            #
+            # NOTE: the results of `Z(wX) g(X) - Z(X) f(X)` and `z(X) f(X) - z(wX) g(X)` are different.
 
-            Z_coeff *
-            (A_coeff + (Polynomial([Scalar.roots_of_unity(group_order)[row] * 1 for row in range(group_order)], Basis.LAGRANGE).ifft()  * self.beta) + self.gamma) *
-            (B_coeff + (Polynomial([Scalar.roots_of_unity(group_order)[row] * 2 for row in range(group_order)], Basis.LAGRANGE).ifft()  * self.beta) + self.gamma) *
-            (C_coeff + (Polynomial([Scalar.roots_of_unity(group_order)[row] * 3 for row in range(group_order)], Basis.LAGRANGE).ifft()  * self.beta) + self.gamma)
+            Z_coeff
+            * (A_coeff + (Polynomial([Scalar.roots_of_unity(group_order)[row] * 1 for row in range(group_order)], Basis.LAGRANGE).ifft()  * self.beta) + self.gamma)
+            * (B_coeff + (Polynomial([Scalar.roots_of_unity(group_order)[row] * 2 for row in range(group_order)], Basis.LAGRANGE).ifft()  * self.beta) + self.gamma)
+            * (C_coeff + (Polynomial([Scalar.roots_of_unity(group_order)[row] * 3 for row in range(group_order)], Basis.LAGRANGE).ifft()  * self.beta) + self.gamma)
 
+            - ZW_coeff
+            * (A_coeff + (S1_coeff * self.beta) + self.gamma)
+            * (B_coeff + (S2_coeff * self.beta) + self.gamma)
+            * (C_coeff + (S3_coeff * self.beta) + self.gamma)
 
-            # # Outputs the label (an inner-field element) representing a given
-            # # (column, row) pair. Expects section = 1 for left, 2 right, 3 output
-            # def label(self, group_order: int) -> Scalar:
-            #     assert self.row < group_order
-            #     return Scalar.roots_of_unity(group_order)[self.row] * self.column.value
         )
 
 
