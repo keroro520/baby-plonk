@@ -276,10 +276,18 @@ class Prover:
             (C_coeff + (S3_coeff * self.beta) + self.gamma) -
 
             Z_coeff *
-            (A_coeff + (Polynomial(roots_of_unity, Basis.LAGRANGE).ifft() * self.beta) + self.gamma) *
-            (B_coeff + (Polynomial([2*u for u in roots_of_unity], Basis.LAGRANGE).ifft()  * self.beta) + self.gamma) *
-            (C_coeff + (Polynomial([3*u for u in roots_of_unity], Basis.LAGRANGE).ifft()  * self.beta) + self.gamma)
+            (A_coeff + (Polynomial([Scalar.roots_of_unity(group_order)[row] * 1 for row in range(group_order)], Basis.LAGRANGE).ifft()  * self.beta) + self.gamma) *
+            (B_coeff + (Polynomial([Scalar.roots_of_unity(group_order)[row] * 2 for row in range(group_order)], Basis.LAGRANGE).ifft()  * self.beta) + self.gamma) *
+            (C_coeff + (Polynomial([Scalar.roots_of_unity(group_order)[row] * 3 for row in range(group_order)], Basis.LAGRANGE).ifft()  * self.beta) + self.gamma)
+
+
+            # # Outputs the label (an inner-field element) representing a given
+            # # (column, row) pair. Expects section = 1 for left, 2 right, 3 output
+            # def label(self, group_order: int) -> Scalar:
+            #     assert self.row < group_order
+            #     return Scalar.roots_of_unity(group_order)[self.row] * self.column.value
         )
+
 
         permutation_first_row_coeff = (Z_coeff - Scalar(1)) * L0_coeff
 
